@@ -6,10 +6,77 @@ package com.sixtyninefourtwenty.stuff
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.annotation.GravityInt
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.textfield.TextInputLayout
 import com.sixtyninefourtwenty.stuff.annotations.NotSuitableForJava
 import com.sixtyninefourtwenty.stuff.listeners.TextWatcherAdapter
+
+/**
+ * Sets [gravity] to a layout params that supports setting gravity:
+ * - [FrameLayout.LayoutParams]
+ * - [LinearLayout.LayoutParams]
+ * - [DrawerLayout.LayoutParams]
+ * - [GridLayout.LayoutParams]
+ * @return true if the params is one of the above subclasses, false if not (the view's params is unchanged
+ * if this method returns false)
+ */
+fun View.updateGravity(@GravityInt gravity: Int): Boolean {
+    val params = layoutParams
+    val success = when (params) {
+        is FrameLayout.LayoutParams -> {
+            params.gravity = gravity
+            true
+        }
+        is LinearLayout.LayoutParams -> {
+            params.gravity = gravity
+            true
+        }
+        is DrawerLayout.LayoutParams -> {
+            params.gravity = gravity
+            true
+        }
+        is GridLayout.LayoutParams -> {
+            params.setGravity(gravity)
+            true
+        }
+        else -> false
+    }
+    if (success) {
+        layoutParams = params
+    }
+    return success
+}
+
+/**
+ * Sets [gravity] to an arbitrary layout params. The params must have either a public `int` field
+ * named `gravity` or a public method named `setGravity` that takes a parameter of type `int`.
+ * @return true if the params satisfies the above condition, false if not (the view's params is unchanged
+ * if this method returns false)
+ */
+fun View.forceUpdateGravity(@GravityInt gravity: Int): Boolean {
+    val params = layoutParams
+    val clazz = layoutParams.javaClass
+    val success = try {
+        clazz.getField("gravity").setInt(params, gravity)
+        true
+    } catch (_: ReflectiveOperationException) {
+        try {
+            clazz.getMethod("setGravity", Int::class.javaPrimitiveType).invoke(params, gravity)
+            true
+        } catch (_: ReflectiveOperationException) {
+            false
+        }
+    }
+    if (success) {
+        layoutParams = params
+    }
+    return success
+}
 
 fun EditText.isBlank() = text == null || text.toString().isBlank()
 
