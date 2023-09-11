@@ -5,6 +5,7 @@ package com.sixtyninefourtwenty.stuff
 
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.GridLayout
@@ -76,6 +77,40 @@ fun View.forceUpdateGravity(@GravityInt gravity: Int): Boolean {
         layoutParams = params
     }
     return success
+}
+
+fun ViewGroup.childrenIterable() = object : Iterable<View> {
+    override fun iterator(): Iterator<View> = ViewGroupIterator(this@childrenIterable)
+}
+
+fun ViewGroup.mutableChildrenIterable() = object : MutableIterable<View> {
+    override fun iterator(): MutableIterator<View> = MutableViewGroupIterator(this@mutableChildrenIterable)
+}
+
+private class MutableViewGroupIterator(private val viewGroup: ViewGroup) : ViewGroupIterator(viewGroup), MutableIterator<View> {
+
+    override fun remove() {
+        check(index >= 0)
+        viewGroup.removeViewAt(index)
+        index--
+    }
+
+}
+
+private open class ViewGroupIterator(private val viewGroup: ViewGroup) : Iterator<View> {
+
+    protected var index = -1
+
+    override fun hasNext(): Boolean = viewGroup.childCount > index + 1
+
+    override fun next(): View {
+        if (!hasNext()) {
+            throw NoSuchElementException()
+        }
+        index++
+        return viewGroup.getChildAt(index)
+    }
+
 }
 
 fun EditText.isBlank() = text == null || text.toString().isBlank()
