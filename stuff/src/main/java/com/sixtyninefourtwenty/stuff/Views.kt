@@ -87,7 +87,7 @@ fun ViewGroup.mutableChildrenIterable() = object : MutableIterable<View> {
     override fun iterator(): MutableIterator<View> = MutableViewGroupIterator(this@mutableChildrenIterable)
 }
 
-private class MutableViewGroupIterator(private val viewGroup: ViewGroup) : ViewGroupIterator(viewGroup), MutableIterator<View> {
+private class MutableViewGroupIterator(viewGroup: ViewGroup) : ViewGroupIterator(viewGroup), MutableIterator<View> {
 
     override fun remove() {
         check(index >= 0)
@@ -97,7 +97,7 @@ private class MutableViewGroupIterator(private val viewGroup: ViewGroup) : ViewG
 
 }
 
-private open class ViewGroupIterator(private val viewGroup: ViewGroup) : Iterator<View> {
+private open class ViewGroupIterator(protected val viewGroup: ViewGroup) : Iterator<View> {
 
     protected var index = -1
 
