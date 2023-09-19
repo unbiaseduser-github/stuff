@@ -3,7 +3,7 @@ package com.sixtyninefourtwenty.stuff.listeners
 import android.view.View
 
 @Suppress("unused")
-fun interface ShortedOnLongClickListener : View.OnLongClickListener {
+fun interface ShortOnLongClickListener : View.OnLongClickListener {
 
     override fun onLongClick(v: View): Boolean {
         onClickCustom(v)
@@ -14,7 +14,7 @@ fun interface ShortedOnLongClickListener : View.OnLongClickListener {
 
     companion object {
         @JvmStatic
-        fun shorten(block: ShortedOnLongClickListener): View.OnLongClickListener = block
+        fun shorten(block: ShortOnLongClickListener): View.OnLongClickListener = block
     }
 
 }
