@@ -31,3 +31,6 @@ inline fun <reified T : Serializable> Bundle.getSerializableCompat(key: String) 
 
 @JvmName("createBundle")
 fun bundle(block: Consumer<in Bundle>) = Bundle().apply(block::accept)
+
+@JvmSynthetic
+inline fun bundle(block: Bundle.() -> Unit) = Bundle().apply(block)
