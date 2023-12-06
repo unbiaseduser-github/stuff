@@ -11,8 +11,13 @@ import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RadioGroup
 import androidx.annotation.GravityInt
+import androidx.annotation.IdRes
+import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputLayout
 import com.sixtyninefourtwenty.stuff.annotations.NotSuitableForJava
 import com.sixtyninefourtwenty.stuff.listeners.TextWatcherAdapter
@@ -78,6 +83,9 @@ fun View.forceUpdateGravity(@GravityInt gravity: Int): Boolean {
     }
     return success
 }
+
+@IdRes
+fun ViewGroup.getViewIdAt(index: Int): Int = get(index).id
 
 fun ViewGroup.childrenIterable() = object : Iterable<View> {
     override fun iterator(): Iterator<View> = ViewGroupIterator(this@childrenIterable)
@@ -147,5 +155,107 @@ fun View.toggleVisibility(visibilityToToggleTo: Int = View.GONE) {
         visibilityToToggleTo
     } else {
         View.VISIBLE
+    }
+}
+
+/**
+ * The index of the selected radio button in this group, or -1 if selection is empty.
+ */
+val RadioGroup.checkedIndex: Int
+    get() {
+        val checkedId = checkedRadioButtonId
+        if (checkedId == -1) {
+            return -1
+        }
+        for (i in 0 ..< childCount) {
+            if (getViewIdAt(i) == checkedId) {
+                return i
+            }
+        }
+        throw AssertionError("unreachable, there must be a button whose id is $checkedId")
+    }
+
+fun RadioGroup.checkIndex(index: Int) {
+    check(getViewIdAt(index))
+}
+
+/**
+ * The index of the selected button in this group, or -1 if selection is empty or not in
+ * [single selection mode][MaterialButtonToggleGroup.isSingleSelection]
+ */
+val MaterialButtonToggleGroup.checkedIndex: Int
+    get() {
+        val checkedId = checkedButtonId
+        if (checkedId == View.NO_ID) {
+            return -1
+        }
+        for (i in 0 ..< childCount) {
+            if (getViewIdAt(i) == checkedId) {
+                return i
+            }
+        }
+        throw AssertionError("unreachable, there must be a button whose id is $checkedId")
+    }
+
+fun MaterialButtonToggleGroup.checkIndex(index: Int) {
+    check(getViewIdAt(index))
+}
+
+fun MaterialButtonToggleGroup.uncheckIndex(index: Int) {
+    uncheck(getViewIdAt(index))
+}
+
+/**
+ * The indices of the selected buttons in this group.
+ */
+val MaterialButtonToggleGroup.checkedIndices: List<Int>
+    get() {
+        return checkedButtonIds.map { checkedId ->
+            for (i in 0 ..< childCount) {
+                if (getViewIdAt(i) == checkedId) {
+                    return@map i
+                }
+            }
+            throw AssertionError("unreachable, there must be a button whose id is $checkedId")
+        }
+    }
+
+/**
+ * Sets the [MaterialButton]s with the specified [indices] to the checked state. If in
+ * [single selection mode][MaterialButtonToggleGroup.isSingleSelection], the button in the last
+ * index will be checked.
+ */
+fun MaterialButtonToggleGroup.checkIndices(indices: Iterable<Int>) {
+    indices.forEach { index ->
+        check(getViewIdAt(index))
+    }
+}
+
+/**
+ * Sets the [MaterialButton]s with the specified [indices] to the checked state. If in
+ * [single selection mode][MaterialButtonToggleGroup.isSingleSelection], the button in the last
+ * index will be checked.
+ */
+fun MaterialButtonToggleGroup.checkIndices(indices: IntArray) {
+    indices.forEach { index ->
+        check(getViewIdAt(index))
+    }
+}
+
+/**
+ * Sets the [MaterialButton]s with the specified [indices] to the unchecked state.
+ */
+fun MaterialButtonToggleGroup.uncheckIndices(indices: Iterable<Int>) {
+    indices.forEach { index ->
+        uncheck(getViewIdAt(index))
+    }
+}
+
+/**
+ * Sets the [MaterialButton]s with the specified [indices] to the unchecked state.
+ */
+fun MaterialButtonToggleGroup.uncheckIndices(indices: IntArray) {
+    indices.forEach { index ->
+        uncheck(getViewIdAt(index))
     }
 }
