@@ -19,35 +19,35 @@ fun ListPreference.setOnPreferenceChange(block: ((String) -> Boolean)?) =
     if (block != null) {
         setOnPreferenceChangeListener { _, newValue -> block(newValue as String) }
     } else {
-        setOnPreferenceChangeListener(null)
+        onPreferenceChangeListener = null
     }
 
 fun SwitchPreferenceCompat.setOnPreferenceChange(block: ((Boolean) -> Boolean)?) =
     if (block != null) {
         setOnPreferenceChangeListener { _, newValue -> block(newValue as Boolean) }
     } else {
-        setOnPreferenceChangeListener(null)
+        onPreferenceChangeListener = null
     }
 
 fun MultiSelectListPreference.setOnPreferenceChange(block: ((Set<String>) -> Boolean)?) =
     if (block != null) {
         setOnPreferenceChangeListener { _, newValue -> @Suppress("UNCHECKED_CAST") block(newValue as Set<String>) }
     } else {
-        setOnPreferenceChangeListener(null)
+        onPreferenceChangeListener = null
     }
 
 fun CheckBoxPreference.setOnPreferenceChange(block: ((Boolean) -> Boolean)?) =
     if (block != null) {
         setOnPreferenceChangeListener { _, newValue -> block(newValue as Boolean) }
     } else {
-        setOnPreferenceChangeListener(null)
+        onPreferenceChangeListener = null
     }
 
 fun SeekBarPreference.setOnPreferenceChange(block: ((Int) -> Boolean)?) =
     if (block != null) {
         setOnPreferenceChangeListener { _, newValue -> block(newValue as Int) }
     } else {
-        setOnPreferenceChangeListener(null)
+        onPreferenceChangeListener = null
     }
 
 fun SharedPreferences.getNonNullString(key: String, defValue: String) = getString(key, defValue)!!
