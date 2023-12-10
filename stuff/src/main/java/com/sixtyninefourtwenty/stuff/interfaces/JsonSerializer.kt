@@ -1,18 +1,21 @@
 package com.sixtyninefourtwenty.stuff.interfaces
 
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 
 @Suppress("unused")
 interface JsonSerializer<T> {
 
+    @Throws(JSONException::class)
     fun toJson(obj: T): JSONObject
 
+    @Throws(JSONException::class)
     fun fromJson(obj: JSONObject): T
 
     fun listToJson(list: List<T>): JSONArray {
         val array = JSONArray()
-        list.map { toJson(it) }.forEach { array.put(it) }
+        list.forEach { array.put(toJson(it)) }
         return array
     }
 
