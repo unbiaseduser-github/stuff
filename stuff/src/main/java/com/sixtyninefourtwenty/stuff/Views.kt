@@ -226,6 +226,14 @@ val MaterialButtonToggleGroup.checkedIndices: List<Int>
  * index will be checked.
  */
 fun MaterialButtonToggleGroup.checkIndices(indices: Iterable<Int>) {
+    if (indices.none()) {
+        return
+    }
+    if (isSingleSelection) {
+        // Check last index to preserve behavior from earlier library versions
+        check(getViewIdAt(indices.last()))
+        return
+    }
     indices.forEach { index ->
         check(getViewIdAt(index))
     }
@@ -237,6 +245,14 @@ fun MaterialButtonToggleGroup.checkIndices(indices: Iterable<Int>) {
  * index will be checked.
  */
 fun MaterialButtonToggleGroup.checkIndices(indices: IntArray) {
+    if (indices.none()) {
+        return
+    }
+    if (isSingleSelection) {
+        // Check last index to preserve behavior from earlier library versions
+        check(getViewIdAt(indices.last()))
+        return
+    }
     indices.forEach { index ->
         check(getViewIdAt(index))
     }
