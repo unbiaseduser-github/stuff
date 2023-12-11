@@ -210,14 +210,38 @@ fun MaterialButtonToggleGroup.uncheckIndex(index: Int) {
  */
 val MaterialButtonToggleGroup.checkedIndices: List<Int>
     get() {
-        return checkedButtonIds.map { checkedId ->
+        val checkedIds = checkedButtonIds
+        /*
+        MaterialButtonToggleGroup.checkedButtonIds returns a new mutable copy of a list of IDs.
+        I can abuse that to replace every ID element with the corresponding button index, which
+        eliminates a List allocation caused by Iterable.map (the solution commented out below).
+
+        Yes, I can use List.replaceAll here, but again I would prefer to not allocate anything
+        considering it's not an inline function.
+         */
+        for (i in 0 ..< checkedIds.size) {
+            val checkedId = checkedIds[i]
+            var indexOfButton: Int = -1
+            for (j in 0 ..< childCount) {
+                if (getViewIdAt(j) == checkedId) {
+                    indexOfButton = j
+                    break
+                }
+            }
+            if (indexOfButton == -1) {
+                throw AssertionError("unreachable, there must be a button whose id is $checkedId")
+            }
+            checkedIds[i] = indexOfButton
+        }
+        return checkedIds
+        /*return checkedButtonIds.map { checkedId ->
             for (i in 0 ..< childCount) {
                 if (getViewIdAt(i) == checkedId) {
                     return@map i
                 }
             }
             throw AssertionError("unreachable, there must be a button whose id is $checkedId")
-        }
+        }*/
     }
 
 /**
