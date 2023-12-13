@@ -30,6 +30,12 @@ class AsyncResultDialogBuilder(context: Context) {
 
     fun setView(view: View?) = apply { delegate.setView(view) }
 
+    fun setPositiveButton(text: CharSequence?) = apply { this.positiveButtonText = text }
+
+    fun setNegativeButton(text: CharSequence?) = apply { this.negativeButtonText = text }
+
+    fun setNeutralButton(text: CharSequence?) = apply { this.neutralButtonText = text }
+
     private fun AlertDialog.setButtonsInternal(
         positiveButtonText: CharSequence? = null,
         negativeButtonText: CharSequence? = null,
@@ -51,11 +57,7 @@ class AsyncResultDialogBuilder(context: Context) {
 
     @JvmSynthetic
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun show(
-        positiveButtonText: CharSequence? = null,
-        negativeButtonText: CharSequence? = null,
-        neutralButtonText: CharSequence? = null
-    ): Int = suspendCancellableCoroutine { cont ->
+    suspend fun show(): Int = suspendCancellableCoroutine { cont ->
         delegate.create().apply {
             val commonListener = DialogInterface.OnClickListener { _, which ->
                 cont.resume(which) { dismiss() }
@@ -66,13 +68,8 @@ class AsyncResultDialogBuilder(context: Context) {
         }.show()
     }
 
-    @JvmOverloads
     @RequiresApi(Build.VERSION_CODES.N)
-    fun showAsCompletableFuture(
-        positiveButtonText: CharSequence? = null,
-        negativeButtonText: CharSequence? = null,
-        neutralButtonText: CharSequence? = null
-    ): CompletableFuture<Int> {
+    fun showAsCompletableFuture(): CompletableFuture<Int> {
         val future = CompletableFuture<Int>()
         val dialog = delegate.create().apply {
             val commonListener = DialogInterface.OnClickListener { _, which ->
@@ -91,12 +88,7 @@ class AsyncResultDialogBuilder(context: Context) {
         return future
     }
 
-    @JvmOverloads
-    fun showAsListenableFuture(
-        positiveButtonText: CharSequence? = null,
-        negativeButtonText: CharSequence? = null,
-        neutralButtonText: CharSequence? = null
-    ): ListenableFuture<Int> {
+    fun showAsListenableFuture(): ListenableFuture<Int> {
         val future = SettableFuture.create<Int>()
         val dialog = delegate.create().apply {
             val commonListener = DialogInterface.OnClickListener { _, which ->

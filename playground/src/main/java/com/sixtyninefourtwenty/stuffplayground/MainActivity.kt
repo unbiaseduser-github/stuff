@@ -22,11 +22,10 @@ class MainActivity : AppCompatActivity() {
         val dialogResult = AsyncResultDialogBuilder(this@MainActivity)
             .setTitle("title")
             .setMessage("message")
-            .showAsCompletableFuture(
-                positiveButtonText = "Positive",
-                negativeButtonText = "Negative",
-                neutralButtonText = "Neutral"
-            )
+            .setPositiveButton("Positive")
+            .setNegativeButton("Negative")
+            .setNeutralButton("Neutral")
+            .showAsCompletableFuture()
 
         lifecycleScope.launch {
             delay(2000)
