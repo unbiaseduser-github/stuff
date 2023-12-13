@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "stuff"
 include(":stuff")
+include(":playground")
