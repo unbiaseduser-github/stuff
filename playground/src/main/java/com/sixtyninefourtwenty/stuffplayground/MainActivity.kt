@@ -3,14 +3,9 @@ package com.sixtyninefourtwenty.stuffplayground
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.google.common.util.concurrent.FutureCallback
-import com.google.common.util.concurrent.Futures
-import com.google.common.util.concurrent.MoreExecutors
-import com.sixtyninefourtwenty.stuff.AsyncResultDialogBuilder
+import com.sixtyninefourtwenty.stuff.RegularAsyncResultDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -19,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val dialogResult = AsyncResultDialogBuilder(this@MainActivity)
+        val dialogResult = RegularAsyncResultDialogBuilder(this@MainActivity)
             .setTitle("title")
             .setMessage("message")
             .setPositiveButton("Positive")

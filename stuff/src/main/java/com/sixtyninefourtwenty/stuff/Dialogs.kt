@@ -17,29 +17,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.CompletableFuture
 
-class AsyncResultDialogBuilder(context: Context) {
+sealed class BaseAsyncResultDialogBuilder<T : BaseAsyncResultDialogBuilder<T>>(context: Context) {
+    protected val delegate = MaterialAlertDialogBuilder(context)
+    protected var positiveButtonText: CharSequence? = null
+    protected var negativeButtonText: CharSequence? = null
+    protected var neutralButtonText: CharSequence? = null
+    protected abstract val self: T
 
-    private val delegate = MaterialAlertDialogBuilder(context)
-    private var positiveButtonText: CharSequence? = null
-    private var negativeButtonText: CharSequence? = null
-    private var neutralButtonText: CharSequence? = null
-
-    fun setTitle(title: CharSequence?) = apply { delegate.setTitle(title) }
-
-    fun setMessage(message: CharSequence?) = apply { delegate.setMessage(message) }
-
-    fun setView(view: View?) = apply { delegate.setView(view) }
-
-    fun setPositiveButton(text: CharSequence?) = apply { this.positiveButtonText = text }
-
-    fun setNegativeButton(text: CharSequence?) = apply { this.negativeButtonText = text }
-
-    fun setNeutralButton(text: CharSequence?) = apply { this.neutralButtonText = text }
-
-    private fun AlertDialog.setButtonsInternal(
-        positiveButtonText: CharSequence? = null,
-        negativeButtonText: CharSequence? = null,
-        neutralButtonText: CharSequence? = null,
+    fun setTitle(title: CharSequence?) = self.apply { delegate.setTitle(title) }
+    fun setPositiveButton(text: CharSequence?) = self.apply { this.positiveButtonText = text }
+    fun setNegativeButton(text: CharSequence?) = self.apply { this.negativeButtonText = text }
+    fun setNeutralButton(text: CharSequence?) = self.apply { this.neutralButtonText = text }
+    protected fun AlertDialog.setButtonsInternal(
         commonListener: DialogInterface.OnClickListener
     ) {
         if (positiveButtonText != null) {
@@ -54,6 +43,13 @@ class AsyncResultDialogBuilder(context: Context) {
             setButton(AlertDialog.BUTTON_NEUTRAL, neutralButtonText, commonListener)
         }
     }
+}
+
+class RegularAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDialogBuilder<RegularAsyncResultDialogBuilder>(context) {
+
+    override val self: RegularAsyncResultDialogBuilder = this
+
+    fun setMessage(message: CharSequence?) = apply { delegate.setMessage(message) }
 
     @JvmSynthetic
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -62,7 +58,7 @@ class AsyncResultDialogBuilder(context: Context) {
             val commonListener = DialogInterface.OnClickListener { _, which ->
                 cont.resume(which) { dismiss() }
             }
-            setButtonsInternal(positiveButtonText, negativeButtonText, neutralButtonText, commonListener)
+            setButtonsInternal(commonListener)
             setOnCancelListener { cont.cancel() }
             cont.invokeOnCancellation { dismiss() }
         }.show()
@@ -75,7 +71,7 @@ class AsyncResultDialogBuilder(context: Context) {
             val commonListener = DialogInterface.OnClickListener { _, which ->
                 future.complete(which)
             }
-            setButtonsInternal(positiveButtonText, negativeButtonText, neutralButtonText, commonListener)
+            setButtonsInternal(commonListener)
             setOnCancelListener { future.cancel(false) }
         }
         dialog.show()
@@ -94,7 +90,7 @@ class AsyncResultDialogBuilder(context: Context) {
             val commonListener = DialogInterface.OnClickListener { _, which ->
                 future.set(which)
             }
-            setButtonsInternal(positiveButtonText, negativeButtonText, neutralButtonText, commonListener)
+            setButtonsInternal(commonListener)
             setOnCancelListener { future.cancel(false) }
         }
         dialog.show()
