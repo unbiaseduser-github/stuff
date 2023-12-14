@@ -13,6 +13,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.common.util.concurrent.SettableFuture
+import com.sixtyninefourtwenty.stuff.annotations.BuiltWithDependency
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.CompletableFuture
@@ -84,6 +85,10 @@ class RegularAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDialogB
         return future
     }
 
+    @BuiltWithDependency(
+        dependency = "com.google.guava:guava",
+        version = "32.1.3-android"
+    )
     fun showAsListenableFuture(): ListenableFuture<Int> {
         val future = SettableFuture.create<Int>()
         val dialog = delegate.create().apply {
