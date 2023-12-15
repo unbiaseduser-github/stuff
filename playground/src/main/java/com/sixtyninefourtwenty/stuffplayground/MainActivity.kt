@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.sixtyninefourtwenty.stuff.RegularAsyncResultDialogBuilder
+import com.sixtyninefourtwenty.stuff.dialogs.RegularAsyncResultDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

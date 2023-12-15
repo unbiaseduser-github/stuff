@@ -1,17 +1,12 @@
-@file:JvmName("Dialogs")
-@file:Suppress("unused")
-
-package com.sixtyninefourtwenty.stuff
+package com.sixtyninefourtwenty.stuff.dialogs
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.concurrent.futures.DirectExecutor
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.common.util.concurrent.SettableFuture
@@ -20,34 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.CompletableFuture
 
-sealed class BaseAsyncResultDialogBuilder<T : BaseAsyncResultDialogBuilder<T>>(context: Context) {
-    protected val delegate = MaterialAlertDialogBuilder(context)
-    protected var positiveButtonText: CharSequence? = null
-    protected var negativeButtonText: CharSequence? = null
-    protected var neutralButtonText: CharSequence? = null
-    protected abstract val self: T
-
-    fun setTitle(title: CharSequence?) = self.apply { delegate.setTitle(title) }
-    fun setPositiveButton(text: CharSequence?) = self.apply { this.positiveButtonText = text }
-    fun setNegativeButton(text: CharSequence?) = self.apply { this.negativeButtonText = text }
-    fun setNeutralButton(text: CharSequence?) = self.apply { this.neutralButtonText = text }
-    protected fun AlertDialog.setButtonsInternal(
-        commonListener: DialogInterface.OnClickListener
-    ) {
-        if (positiveButtonText != null) {
-            setButton(AlertDialog.BUTTON_POSITIVE, positiveButtonText, commonListener)
-        }
-
-        if (negativeButtonText != null) {
-            setButton(AlertDialog.BUTTON_NEGATIVE, negativeButtonText, commonListener)
-        }
-
-        if (neutralButtonText != null) {
-            setButton(AlertDialog.BUTTON_NEUTRAL, neutralButtonText, commonListener)
-        }
-    }
-}
-
+@Suppress("unused")
 class RegularAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDialogBuilder<RegularAsyncResultDialogBuilder>(context) {
 
     override val self: RegularAsyncResultDialogBuilder = this
