@@ -3,12 +3,14 @@
 
 package com.sixtyninefourtwenty.stuff
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Build
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.concurrent.futures.CallbackToFutureAdapter
+import androidx.concurrent.futures.DirectExecutor
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
@@ -89,7 +91,7 @@ class RegularAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDialogB
         dependency = "com.google.guava:guava",
         version = "32.1.3-android"
     )
-    fun showAsListenableFuture(): ListenableFuture<Int> {
+    fun showAsGuavaFuture(): ListenableFuture<Int> {
         val future = SettableFuture.create<Int>()
         val dialog = delegate.create().apply {
             val commonListener = DialogInterface.OnClickListener { _, which ->
@@ -101,6 +103,25 @@ class RegularAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDialogB
         dialog.show()
         return future.apply {
             addListener({ dialog.dismiss() }, MoreExecutors.directExecutor())
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    @BuiltWithDependency(
+        dependency = "androidx.concurrent:concurrent-futures",
+        version = "1.1.0"
+    )
+    fun showAsAndroidXFuture(): ListenableFuture<Int> {
+        return CallbackToFutureAdapter.getFuture { completer ->
+            val dialog = delegate.create().apply {
+                val commonListener = DialogInterface.OnClickListener { _, which ->
+                    completer.set(which)
+                }
+                setButtonsInternal(commonListener)
+                setOnCancelListener { completer.setCancelled() }
+            }
+            dialog.show()
+            completer.addCancellationListener({ dialog.dismiss() }, DirectExecutor.INSTANCE)
         }
     }
 
