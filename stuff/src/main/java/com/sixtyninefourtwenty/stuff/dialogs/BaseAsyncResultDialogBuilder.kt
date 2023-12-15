@@ -8,6 +8,18 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.sixtyninefourtwenty.stuff.annotations.BuiltWithDependency
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Superclass for async result dialog builders. It defines four methods to get a result of type [R]:
+ * - Via a suspending function
+ * - Via a Java 8's [CompletableFuture] - requires minSdk 24
+ * - Via a [ListenableFuture] obtained with the `Guava` library
+ * - Via a [ListenableFuture] obtained with the `androidx.concurrent:concurrent-futures` library
+ *
+ * For the vast majority of cases there's no need to
+ * refer to this directly - just use one of the subclasses.
+ * @param T self-type for method chaining
+ * @param R type of dialog's result
+ */
 sealed class BaseAsyncResultDialogBuilder<T : BaseAsyncResultDialogBuilder<T, R>, R>(context: Context) {
     protected val delegate = MaterialAlertDialogBuilder(context)
     protected var positiveButtonText: CharSequence? = null

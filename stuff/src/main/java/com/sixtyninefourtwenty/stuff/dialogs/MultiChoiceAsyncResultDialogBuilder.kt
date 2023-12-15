@@ -3,12 +3,20 @@
 package com.sixtyninefourtwenty.stuff.dialogs
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import com.google.common.util.concurrent.ListenableFuture
 import com.sixtyninefourtwenty.stuff.annotations.BuiltWithDependency
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Builder to show a multi-choice dialog.
+ *
+ * Result is a [MultiChoiceDialogResult].
+ * @see AlertDialog.Builder.setMultiChoiceItems
+ */
 class MultiChoiceAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDialogBuilder<MultiChoiceAsyncResultDialogBuilder, MultiChoiceDialogResult>(context) {
 
     override val self: MultiChoiceAsyncResultDialogBuilder = this
@@ -59,6 +67,12 @@ class MultiChoiceAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDia
 
 }
 
+/**
+ * Represents the result of a [MultiChoiceAsyncResultDialogBuilder].
+ * @property dialogButton One of [DialogInterface.BUTTON_POSITIVE],
+ * [DialogInterface.BUTTON_NEGATIVE] and [DialogInterface.BUTTON_NEUTRAL]
+ * @property itemIndices Indices of currently checked items
+ */
 class MultiChoiceDialogResult internal constructor(
     val dialogButton: Int,
     val itemIndices: Set<Int>

@@ -1,12 +1,19 @@
 package com.sixtyninefourtwenty.stuff.dialogs
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.common.util.concurrent.ListenableFuture
 import com.sixtyninefourtwenty.stuff.annotations.BuiltWithDependency
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Builder to show a dialog with a simple message.
+ *
+ * Result is one of [DialogInterface.BUTTON_POSITIVE],
+ * [DialogInterface.BUTTON_NEGATIVE] and [DialogInterface.BUTTON_NEUTRAL].
+ */
 @Suppress("unused")
 class RegularAsyncResultDialogBuilder(context: Context) : BaseAsyncResultDialogBuilder<RegularAsyncResultDialogBuilder, Int>(context) {
 
