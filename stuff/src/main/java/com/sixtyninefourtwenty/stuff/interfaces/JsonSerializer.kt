@@ -13,6 +13,16 @@ interface JsonSerializer<T> {
     @Throws(JSONException::class)
     fun fromJson(obj: JSONObject): T
 
+    /**
+     * Convenience for `toJson(obj).toString()`.
+     */
+    fun toJsonString(obj: T) = toJson(obj).toString()
+
+    /**
+     * Convenience for `fromJson(JSONObject(jsonString))`.
+     */
+    fun fromJsonString(jsonString: String) = fromJson(JSONObject(jsonString))
+
     fun listToJson(list: List<T>): JSONArray {
         val array = JSONArray()
         list.forEach { array.put(toJson(it)) }

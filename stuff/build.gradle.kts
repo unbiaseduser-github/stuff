@@ -94,6 +94,7 @@ dependencies {
     testImplementation("androidx.test.ext:junit:1.1.5")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    testImplementation("org.json:json:20231013")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

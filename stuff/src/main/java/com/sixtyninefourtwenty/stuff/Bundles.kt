@@ -8,8 +8,16 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.core.os.BundleCompat
 import com.sixtyninefourtwenty.stuff.annotations.NotSuitableForJava
+import com.sixtyninefourtwenty.stuff.interfaces.JsonSerializable
+import com.sixtyninefourtwenty.stuff.interfaces.JsonSerializer
 import java.io.Serializable
 import java.util.function.Consumer
+
+fun <T : JsonSerializable<T>> Bundle.putJsonSerializable(key: String, obj: T?) =
+    putString(key, obj?.jsonSerializer?.toJsonString(obj))
+
+fun <T> Bundle.getJsonSerializable(key: String, jsonSerializer: JsonSerializer<T>) =
+    getString(key)?.let { jsonSerializer.fromJsonString(it) }
 
 @NotSuitableForJava(reason = "Extension wrapper for BundleCompat.getParcelable.")
 fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>) =

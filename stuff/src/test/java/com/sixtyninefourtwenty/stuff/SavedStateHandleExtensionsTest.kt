@@ -262,6 +262,20 @@ class SavedStateHandleExtensionsTest {
         assertEquals(arr2, savedStateHandle.getCharSequenceArray(KEY))
     }
 
+    @Test
+    fun jsonSerializableTest() {
+        val serializer = SampleJsonSerializable.SERIALIZER
+        assertNull(savedStateHandle.getJsonSerializable(KEY, serializer))
+        val firstObj = SampleJsonSerializable(0, "a")
+        assertEquals(firstObj, savedStateHandle.getOrSetJsonSerializable(KEY, serializer) {
+            firstObj
+        })
+        assertEquals(firstObj, savedStateHandle.getJsonSerializable(KEY, serializer))
+        val secondObj = SampleJsonSerializable(1, "b")
+        savedStateHandle.setJsonSerializable(KEY, secondObj)
+        assertEquals(secondObj, savedStateHandle.getJsonSerializable(KEY, serializer))
+    }
+
     private data class MyParcelable(val something: String = "something") : Parcelable {
         override fun describeContents(): Int = 0
 

@@ -5,7 +5,13 @@ package com.sixtyninefourtwenty.stuff
 
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
+import com.sixtyninefourtwenty.stuff.interfaces.JsonSerializable
+import com.sixtyninefourtwenty.stuff.interfaces.JsonSerializer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.io.Serializable
 
 fun SavedStateHandle.getBoolean(key: String) = get<Boolean>(key)
@@ -304,3 +310,50 @@ fun <T : Serializable?> SavedStateHandle.getNullableSerializableLiveData(key: St
 fun <T : Serializable?> SavedStateHandle.getNullableSerializableLiveData(key: String, initialValue: T) = getLiveData(key, initialValue)
 fun <T : Serializable> SavedStateHandle.getSerializableStateFlow(key: String, initialValue: T) = getStateFlow(key, initialValue)
 fun <T : Serializable?> SavedStateHandle.getNullableSerializableStateFlow(key: String, initialValue: T) = getStateFlow(key, initialValue)
+
+fun <T> SavedStateHandle.getJsonSerializable(key: String, jsonSerializer: JsonSerializer<T>) = getString(key)?.let { jsonSerializer.fromJsonString(it) }
+fun <T : JsonSerializable<T>> SavedStateHandle.setJsonSerializable(key: String, obj: T) = setString(key, obj.jsonSerializer.toJsonString(obj))
+inline fun <T : JsonSerializable<T>> SavedStateHandle.getOrSetJsonSerializable(
+    key: String,
+    jsonSerializer: JsonSerializer<T>,
+    block: () -> T
+) = getJsonSerializable(key, jsonSerializer) ?: run {
+    block().also { setJsonSerializable(key, it) }
+}
+fun <T> SavedStateHandle.getJsonSerializableLiveData(key: String, jsonSerializer: JsonSerializer<T>) =
+    getStringLiveData(key).map { jsonSerializer.fromJsonString(it) }
+fun <T : JsonSerializable<T>> SavedStateHandle.getJsonSerializableLiveData(key: String, initialValue: T): LiveData<T> {
+    val jsonSerializer = initialValue.jsonSerializer
+    return getStringLiveData(key, jsonSerializer.toJsonString(initialValue)).map {
+        jsonSerializer.fromJsonString(it)
+    }
+}
+fun <T> SavedStateHandle.getNullableJsonSerializableLiveData(key: String, jsonSerializer: JsonSerializer<T>) =
+    getNullableStringLiveData(key).map { nullableValue -> nullableValue?.let { jsonSerializer.fromJsonString(it) } }
+fun <T : JsonSerializable<T>> SavedStateHandle.getNullableJsonSerializableLiveData(
+    key: String,
+    initialValue: T?
+): LiveData<T?> {
+    val jsonSerializer = initialValue?.jsonSerializer
+    return getNullableStringLiveData(key, jsonSerializer?.toJsonString(initialValue)).map { nullableValue ->
+        nullableValue?.let { jsonSerializer?.fromJsonString(it) }
+    }
+}
+fun <T : JsonSerializable<T>> SavedStateHandle.getJsonSerializableFlow(
+    key: String,
+    initialValue: T
+): Flow<T> {
+    val jsonSerializer = initialValue.jsonSerializer
+    return getStringStateFlow(key, jsonSerializer.toJsonString(initialValue)).map {
+        jsonSerializer.fromJsonString(it)
+    }
+}
+fun <T : JsonSerializable<T>> SavedStateHandle.getNullableJsonSerializableFlow(
+    key: String,
+    initialValue: T?
+): Flow<T?> {
+    val jsonSerializer = initialValue?.jsonSerializer
+    return getNullableStringStateFlow(key, jsonSerializer?.toJsonString(initialValue)).map { nullableValue ->
+        nullableValue?.let { jsonSerializer?.fromJsonString(it) }
+    }
+}
