@@ -13,8 +13,10 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.common.util.concurrent.SettableFuture
 import com.sixtyninefourtwenty.stuff.annotations.BuiltWithDependency
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.concurrent.CompletableFuture
 
 internal fun AlertDialog.setButtons(
@@ -42,15 +44,17 @@ internal suspend fun <T> AlertDialog.Builder.showSuspending(
     negativeButtonText: CharSequence?,
     neutralButtonText: CharSequence?,
     resultFunction: (whichButton: Int) -> T
-): T = suspendCancellableCoroutine { cont ->
-    create().apply {
-        val commonListener = DialogInterface.OnClickListener { _, which ->
-            cont.resume(resultFunction(which)) { dismiss() }
-        }
-        setButtons(positiveButtonText, negativeButtonText, neutralButtonText, commonListener)
-        setOnCancelListener { cont.cancel() }
-        cont.invokeOnCancellation { dismiss() }
-    }.show()
+): T = withContext(Dispatchers.Main.immediate) {
+    suspendCancellableCoroutine { cont ->
+        create().apply {
+            val commonListener = DialogInterface.OnClickListener { _, which ->
+                cont.resume(resultFunction(which)) { dismiss() }
+            }
+            setButtons(positiveButtonText, negativeButtonText, neutralButtonText, commonListener)
+            setOnCancelListener { cont.cancel() }
+            cont.invokeOnCancellation { dismiss() }
+        }.show()
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.N)

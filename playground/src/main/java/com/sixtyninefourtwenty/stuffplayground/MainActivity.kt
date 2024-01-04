@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.sixtyninefourtwenty.stuff.dialogs.RegularAsyncResultDialogBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -14,7 +15,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val dialogResult = RegularAsyncResultDialogBuilder(this@MainActivity)
+        lifecycleScope.launch(Dispatchers.IO) {
+            RegularAsyncResultDialogBuilder(this@MainActivity)
+                .setTitle("title")
+                .setMessage("message")
+                .setPositiveButton("Positive")
+                .setNegativeButton("Negative")
+                .setNeutralButton("Neutral")
+                .show()
+        }
+
+        /*val dialogResult = RegularAsyncResultDialogBuilder(this@MainActivity)
             .setTitle("title")
             .setMessage("message")
             .setPositiveButton("Positive")
@@ -46,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             } else if (u != null) {
                 Toast.makeText(this@MainActivity, "exception", Toast.LENGTH_SHORT).show()
             }
-        }
+        }*/
 
         /*Futures.addCallback(
             dialogResult,
